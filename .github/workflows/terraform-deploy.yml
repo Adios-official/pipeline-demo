@@ -25,6 +25,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      # ADDED: Grant permission for the approval action to create issues
+      issues: write
 
     steps:
       # Step 1: Check out the code from the repository
