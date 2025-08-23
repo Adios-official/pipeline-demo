@@ -7,7 +7,7 @@ region = "eu-central-1"
 # VPC Information
 vpc_id = "vpc-03f2423ead6bb7605"
 
-
+#test
 ##############################################################################################################################
 # BLOCK 2 #  BASIC VARIABLES FOR CE 
 # AWS Instance Information - Resources required per node: Minimum 4 vCPUs, 14 GB RAM, and 80 GB disk storage
