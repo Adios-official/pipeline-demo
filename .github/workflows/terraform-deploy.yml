@@ -62,8 +62,8 @@ jobs:
       - name: Terraform Plan
         id: plan
         env:
-          # Use the password secret for authentication
-          VOLTERRA_API_P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          # CORRECTED: Use the correct environment variable for the F5 provider
+          VES_P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
         run: terraform plan -out=tfplan -input=false -var-file="sites.tfvars"
 
       # Step 7: Manual Approval Gate
@@ -80,6 +80,6 @@ jobs:
       - name: Terraform Apply
         id: apply
         env:
-          # Use the password secret for authentication
-          VOLTERRA_API_P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          # CORRECTED: Use the correct environment variable for the F5 provider
+          VES_P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
         run: terraform apply -auto-approve tfplan
