@@ -2,86 +2,72 @@
 
 name: 'Terraform F5 Site Deployment'
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push events but only for the main branch
   push:
     branches:
       - main
     paths:
-      # Triggers on a standard .tfvars file
       - 'sites.tfvars'
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   terraform:
     name: 'Terraform Plan & Apply'
     runs-on: ubuntu-latest
     
-    # These permissions are needed for the OIDC connection to AWS
     permissions:
       id-token: write
       contents: read
-      # ADDED: Grant permission for the approval action to create issues
       issues: write
 
     steps:
-      # Step 1: Check out the code from the repository
       - name: Checkout
         uses: actions/checkout@v3
 
-      # Step 2: Configure AWS credentials using OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: ${{ secrets.AWS_REGION }} 
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
-      # Step 3: Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.3.0
 
-      # Step 4: Decode the .p12 file from a GitHub Secret
       - name: Decode .p12 Certificate
         run: |
           echo "Decoding F5 API certificate..."
           echo "${{ secrets.P12_FILE_BASE64 }}" | base64 --decode > creds.p12
-          echo "Certificate file created."
         env:
           P12_FILE_BASE64: ${{ secrets.P12_FILE_BASE64 }}
 
-      # Step 5: Terraform Init
+      # This is the updated init step that configures the S3 backend
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=f5-pipeline-demo-tfstate" \
+            -backend-config="key=f5-sites/terraform.tfstate" \
+            -backend-config="region=${{ secrets.AWS_REGION }}"
 
-      # Step 6: Terraform Plan
       - name: Terraform Plan
         id: plan
         env:
-          # CORRECTED: Use the correct environment variable for the F5 provider
           VES_P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
         run: terraform plan -out=tfplan -input=false -var-file="sites.tfvars"
 
-      # Step 7: Manual Approval Gate
       - name: Manual Approval Gate
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.token }}
-          approvers: "Adios-official" # Change this to your GitHub username
+          approvers: "Adios-official"
           minimum-approvals: 1
           issue-title: "Deployment Approval Required for F5 Site"
           issue-body: "A new Terraform plan has been generated. Please review the plan output above and approve to apply the changes."
           
-      # Step 8: Terraform Apply
       - name: Terraform Apply
         id: apply
         env:
-          # CORRECTED: Use the correct environment variable for the F5 provider
           VES_P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
         run: terraform apply -auto-approve tfplan
