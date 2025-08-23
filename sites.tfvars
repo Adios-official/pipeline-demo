@@ -15,7 +15,7 @@ vpc_id = "vpc-098a239bad1a54322"
 ##############################################################################################################################
 
 # Base name for EC2 instances
-cluster_name = "adios-awsedmo-smsv2-3no-2nic-1"    # Name for the customer Edge ( Each node will take this name followed by suffix like node-1, node-2 etc. )
+cluster_name = "adios-awsedmo-git"    # Name for the customer Edge ( Each node will take this name followed by suffix like node-1, node-2 etc. )
 num_nodes           = 3                      # Choose if you need a Single Node CE or an HA CE with 3 Nodes
 num_nics            = 2                      # Use 1 for single NIC or 2 for dual NIC. If you need dual NIC, please fill section  # VPC Network for SLI
 instance_type = "t3.xlarge"
