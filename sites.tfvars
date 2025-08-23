@@ -25,7 +25,7 @@ root_block_device = {                        # The root block device is the prim
   volume_type         = "gp2"                # Type of EBS volume (e.g., gp2 for General Purpose SSD, io1 for Provisioned IOPS SSD).
   encrypted           = false                # Whether the root volume is encrypted (default: false).
   }       
-  key_pair            = "sample_wbs"         # This would be existing SSH key pair in AWS for Command line access to the nodes.
+  key_pair            = "adios-keypair"         # This would be existing SSH key pair in AWS for Command line access to the nodes.
   tags = {                                   # Tags you would like to add to the nodes in the CE cluster. 
   "Environment"       = "Development"
   "customer_tag_1"    = "placeholder1"
