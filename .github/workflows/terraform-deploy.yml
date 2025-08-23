@@ -1,0 +1,80 @@
+# .github/workflows/terraform-deploy.yml
+
+name: 'Terraform F5 Site Deployment'
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events but only for the main branch
+  push:
+    branches:
+      - main
+    paths:
+      # UPDATED: Now triggers on a standard .tfvars file
+      - 'sites.tfvars'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  terraform:
+    name: 'Terraform Plan & Apply'
+    runs-on: ubuntu-latest
+    
+    # These permissions are needed for the OIDC connection to AWS
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Step 1: Check out the code from the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Step 2: Configure AWS credentials using OIDC
+      # This securely authenticates with AWS without needing long-lived secrets
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          # The AWS region to connect to
+          aws-region: ${{ secrets.AWS_REGION }} 
+          # The ARN of the IAM Role that GitHub is allowed to assume
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+      # Step 3: Setup Terraform
+      # This step downloads a specific version of the Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.0 # Use a specific version for consistency
+
+      # Step 4: Terraform Init
+      # Initializes the Terraform working directory
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      # Step 5: Terraform Plan
+      # Generates an execution plan and saves it to a file
+      - name: Terraform Plan
+        id: plan
+        # UPDATED: Now uses the standard .tfvars file
+        run: terraform plan -out=tfplan -input=false -var-file="sites.tfvars"
+
+      # Step 6: Manual Approval Gate
+      # This creates an "environment" that requires a manual approval
+      # before the workflow can proceed to the next step.
+      - name: Manual Approval Gate
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.token }}
+          approvers: "Adios-official" # <-- IMPORTANT: Change this to your GitHub username
+          minimum-approvals: 1
+          issue-title: "Deployment Approval Required for F5 Site"
+          issue-body: "A new Terraform plan has been generated. Please review the plan output above and approve to apply the changes."
+          
+      # Step 7: Terraform Apply
+      # This step only runs if the manual approval is given
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve tfplan
