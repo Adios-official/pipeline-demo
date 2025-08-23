@@ -5,7 +5,7 @@
 region = "eu-central-1"
 
 # VPC Information
-vpc_id = "vpc-03f2423ead6bb7605"
+vpc_id = "vpc-098a239bad1a54322"
 
 #test23
 ##############################################################################################################################
@@ -49,12 +49,13 @@ root_block_device = {                        # The root block device is the prim
 # Subnet IDs (ensure these match the number of nodes if num_nodes = 3)
 # Add your Subnet IDs here for SLO, 1 for each node in case of 3 nodes. For 1 node just 1 value is enough in the list.
 slo_subnet_ids = [
-  "subnet-05cd4c20accef9255", # For node-1
-  "subnet-04e327585c3b9ec72", # For node-2
-  "subnet-0650f249085b8954a"  # For node-3
+  "subnet-059e3fda95314551d", # For node-1
+  "subnet-0d9c94fbbba9458db", # For node-2
+  "subnet-0e5f950266e0da4e1"  # For node-3
 ]
 
-
+#slo_subnet_ids = ["subnet-059e3fda95314551d", "subnet-0d9c94fbbba9458db", "subnet-0e5f950266e0da4e1"]
+#sli_subnet_ids = ["subnet-03a63abc02e7bbc2f", "subnet-060e182f9a5eb9efe", "subnet-002f328411355c7be"]
 ##############################################################################################################################
 # BLOCK 3 #  NETWORKING AND NETWORK INTERFACES FOR NODES
 # 3.2 SLI CONFIG 
@@ -65,9 +66,9 @@ slo_subnet_ids = [
 # Subnet IDs (ensure these match the number of nodes if num_nodes = 3)
 # Add your Subnetwork/Subnet name here for SLI, 1 for each node in case of 3 nodes. For 1 node just 1 value is enough in the list.
 sli_subnet_ids = [
-  "subnet-0b330e826243da9a2", # For node-1
-  "subnet-0ed31570e0b540a1e", # For node-2
-  "subnet-0922171b2f23b3642"  # For node-3
+  "subnet-03a63abc02e7bbc2f", # For node-1
+  "subnet-060e182f9a5eb9efe", # For node-2
+  "subnet-002f328411355c7be"  # For node-3
 ]
 
 ##############################################################################################################################
